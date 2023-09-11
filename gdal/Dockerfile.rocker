@@ -1,5 +1,5 @@
 # Build final image
-FROM rocker/geospatial:latest 
+FROM rocker/r-ver:latest 
 
 USER root
 RUN date
@@ -54,10 +54,10 @@ COPY --from=rocker/gdal:builder  /build_thirdparty/usr/ /usr/
 ARG PROJ_INSTALL_PREFIX=/usr/local
 COPY --from=rocker/gdal:builder  /tmp/proj_grids/* ${PROJ_INSTALL_PREFIX}/share/proj/
 
-COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/share/proj/ ${PROJ_INSTALL_PREFIX}/share/proj/
-COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/include/ ${PROJ_INSTALL_PREFIX}/include/
-COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/bin/ ${PROJ_INSTALL_PREFIX}/bin/
-COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/lib/ ${PROJ_INSTALL_PREFIX}/lib/
+COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/share/proj/ /usr/share/proj/
+COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/include/ /usr/include/
+COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/bin/ /usr/bin/
+COPY --from=rocker/gdal:builder  /build${PROJ_INSTALL_PREFIX}/lib/ /usr/lib/
 
 COPY --from=rocker/gdal:builder  /build/usr/share/java /usr/share/java
 COPY --from=rocker/gdal:builder  /build/usr/share/gdal/ /usr/share/gdal/
@@ -66,6 +66,11 @@ COPY --from=rocker/gdal:builder  /build_gdal_python/usr/ /usr/
 COPY --from=rocker/gdal:builder  /build_gdal_version_changing/usr/ /usr/
 
 RUN ldconfig
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    libssl-dev libudunits2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN R -e "install.packages('sf', repos='https://cran.rstudio.com')"
 
