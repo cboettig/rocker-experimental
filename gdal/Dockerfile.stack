@@ -7,11 +7,11 @@
 
 FROM rocker/r-ver 
 
-# Derived from osgeo/proj by Howard Butler <howard@hobu.co>
-LABEL maintainer="Even Rouault <even.rouault@spatialys.com>"
-
 ARG TARGET_ARCH=
 RUN echo ${TARGET_ARCH}
+
+# Derived from osgeo/proj by Howard Butler <howard@hobu.co>
+
 COPY ./bh-set-envvars.sh /buildscripts/bh-set-envvars.sh
 
 RUN . /buildscripts/bh-set-envvars.sh \
@@ -327,21 +327,20 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Attempt to order layers starting with less frequently varying ones
-
-COPY /build_thirdparty/usr/ /usr/
+RUN cp /build_thirdparty/usr/ /usr/
 
 ARG PROJ_INSTALL_PREFIX=/usr/local
-COPY /tmp/proj_grids/* ${PROJ_INSTALL_PREFIX}/share/proj/
+RUN cp /tmp/proj_grids/* ${PROJ_INSTALL_PREFIX}/share/proj/
 
-COPY /build${PROJ_INSTALL_PREFIX}/share/proj/ ${PROJ_INSTALL_PREFIX}/share/proj/
-COPY /build${PROJ_INSTALL_PREFIX}/include/ ${PROJ_INSTALL_PREFIX}/include/
-COPY /build${PROJ_INSTALL_PREFIX}/bin/ ${PROJ_INSTALL_PREFIX}/bin/
-COPY /build${PROJ_INSTALL_PREFIX}/lib/ ${PROJ_INSTALL_PREFIX}/lib/
+RUN cp /build${PROJ_INSTALL_PREFIX}/share/proj/ ${PROJ_INSTALL_PREFIX}/share/proj/
+RUN cp /build${PROJ_INSTALL_PREFIX}/include/ ${PROJ_INSTALL_PREFIX}/include/
+RUN cp /build${PROJ_INSTALL_PREFIX}/bin/ ${PROJ_INSTALL_PREFIX}/bin/
+RUN cp /build${PROJ_INSTALL_PREFIX}/lib/ ${PROJ_INSTALL_PREFIX}/lib/
 
-COPY /build/usr/share/java /usr/share/java
-COPY /build/usr/share/gdal/ /usr/share/gdal/
-COPY /build/usr/include/ /usr/include/
-COPY /build_gdal_python/usr/ /usr/
-COPY /build_gdal_version_changing/usr/ /usr/
+RUN cp /build/usr/share/java /usr/share/java
+RUN cp /build/usr/share/gdal/ /usr/share/gdal/
+RUN cp /build/usr/include/ /usr/include/
+RUN cp /build_gdal_python/usr/ /usr/
+RUN cp /build_gdal_version_changing/usr/ /usr/
 
 RUN ldconfig
